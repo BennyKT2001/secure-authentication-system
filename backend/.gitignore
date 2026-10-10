@@ -1,0 +1,13 @@
+node_modules/
+
+.env
+.env.*
+!.env.example
+
+coverage/
+*.log
+cookies.txt
+login-cookies.txt
+*-cookies.txt
+
+.DS_Store

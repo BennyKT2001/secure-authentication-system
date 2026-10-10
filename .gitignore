@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime and test files
+coverage/
+*.log
+cookies.txt
+login-cookies.txt
+*-cookies.txt
+
+# macOS
+.DS_Store
+
+# Build output
+dist/
+build/
