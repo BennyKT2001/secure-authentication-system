@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole, ShieldCheck, UsersRound } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../components/ui/BrandLogo.jsx';
+import { authApi } from "../../services/api.js";
 
 const securityPoints = [
   {
@@ -22,19 +24,31 @@ const securityPoints = [
 ];
 
 function LoginPage() {
+
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [trustDevice, setTrustDevice] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setErrorMessage('');
         setIsSubmitting(true);
 
-        window.setTimeout(() => {
-        setIsSubmitting(false);
-        }, 800);
+        try {
+            await authApi.login({ email, password, trustDevice });
+            navigate('/verify-login-otp', {
+                state: { email },
+            });
+        } catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -141,6 +155,16 @@ function LoginPage() {
                         <form className="mt-space-xl space-y-space-md" onSubmit={handleSubmit}>
                             {/* Email */}
                             <div>
+
+                                {/* Error message */}
+                                {errorMessage && (
+                                    <div role="alert" className="rounded-lg bg-error-container px-space-md py-space-sm text-body-sm text-on-error-container">
+                                        <p className="text-label-md font-label-md font-medium text-error">
+                                            {errorMessage}
+                                        </p>
+                                    </div>
+                                )}
+
                                 <label htmlFor="email" className="mb-space-xs block text-label-md font-label-md font-medium" >
                                     Work email
                                 </label>
