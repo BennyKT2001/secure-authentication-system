@@ -66,6 +66,34 @@ export const updateUser = async (req, res, next) => {
         });
 
     } catch (error) {
+        next(error);
+    }
+};
 
+// * DELETE USER
+export const deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        // ? Check if the user exists
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ User deleted successfully",
+            data: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+            },
+        });
+
+    } catch (error) {
+        next(error);
     }
 };

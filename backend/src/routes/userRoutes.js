@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, updateUser } from "../controllers/userController.js";
+import { getUsers, updateUser, deleteUser } from "../controllers/userController.js";
 import { authenticate, authoriseRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -13,5 +13,10 @@ router.get("/", authenticate, authoriseRoles("admin"), getUsers);
 // @desc    Update a user by ID
 // @access  Private
 router.patch("/:id", authenticate, authoriseRoles("admin"), updateUser);
+
+// @route   DELETE /api/users/:id
+// @desc    Delete a user by ID
+// @access  Private
+router.delete("/:id", authenticate, authoriseRoles("admin"), deleteUser);
 
 export default router;
