@@ -144,3 +144,27 @@ export const updateAsset = async (req, res, next) => {
         next(error);
     }
 };
+
+// *
+export const deleteAsset = async (req, res, next) => {
+    try {
+        const asset = await Asset.findByIdAndDelete(req.params.id);
+
+        // ? Check if asset exists
+        if (!asset) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ Asset not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Asset deleted successfully",
+            data: asset
+        });
+
+    } catch (error) {
+
+    }
+}
