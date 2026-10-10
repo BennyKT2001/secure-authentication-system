@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
+import assetRoutes from "./routes/assetRoutes.js";
 
 dotenv.config();
 
@@ -34,8 +35,11 @@ app.use(cookieParser());
 // ! Apply rate limiting to all API routes
 app.use("/api/", apiLimiter);
 
-//! Routes
+// * Auth Routes
 app.use("/api/auth", authRoutes);
+
+// * Assets Routes
+app.use("/api/assets", assetRoutes);
 
 //! Health check endpoint
 app.get("/api/health", (req, res) => {

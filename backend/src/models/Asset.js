@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const assetSchema = new mongoose.Schema ({
         name: {
-            string,
+            type: String,
             required: [true, "Asset name is required"],
             trim: true,
             maxlength: [150, "Asset name must be at most 150 characters long"],
@@ -29,7 +29,7 @@ const assetSchema = new mongoose.Schema ({
             trim: true,
             unique: true,
             uppercase: true,
-            maxlength: [50, "Asset serial number must be at most 50 characters long"],
+            maxlength: [100, "Asset serial number must be at most 100 characters long"],
         },
 
         status: {
