@@ -89,3 +89,58 @@ export const getAssetById = async (req, res, next) => {
         next(error);
     }
 };
+
+// * UPDATE ASSET
+export const updateAsset = async (req, res, next) => {
+    try {
+        const allowedFields = [
+            "name",
+            "description",
+            "category",
+            "serialNumber",
+            "status",
+            "assignedTo"
+        ];
+
+        const updates = {};
+
+        // ? Update only allowed fields
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        }
+
+        // ? Update Serial Number
+        if (updates.serialNumber) {
+            updates.serialNumber = updates.serialNumber.toUpperCase();
+        }
+
+        const asset = await Asset.findByIdAndUpdate(
+            req.params.id,
+            updates,
+            {
+                new: true,
+                runValidators: true,
+            }
+        )
+        .populate("createdBy", "fullName email")
+        .populate("assignedTo", "fullName email");
+
+        if (!asset) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ Asset not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Asset updated successfully",
+            data: asset
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

@@ -1,5 +1,5 @@
 import express from "express";
-import { createAsset, getAssets, getAssetById } from "../controllers/assetController.js";
+import { createAsset, getAssets, getAssetById, updateAsset } from "../controllers/assetController.js";
 import { authenticate, authoriseRoles } from "../middleware/authMiddleware.js";
 import { createAssetValidation } from "../validators/assetValidator.js";
 import { handleValidationErrors } from "../validators/authValidator.js";
@@ -20,5 +20,10 @@ router.get("/", authenticate, authoriseRoles("admin", "employee"), getAssets);
 // @desc    Get an asset by ID
 // @access  Private
 router.get("/:id", authenticate, authoriseRoles("admin", "employee"), getAssetById);
+
+// @route   PUT /api/assets/:id
+// @desc    Update an asset by ID
+// @access  Private
+router.patch("/:id", authenticate, authoriseRoles("admin"), updateAsset);
 
 export default router;
