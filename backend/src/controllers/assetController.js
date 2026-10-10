@@ -44,3 +44,22 @@ export const createAsset = async (req, res, next) => {
         next(error);
     }
 };
+
+// * GET ALL ASSETS
+export const getAssets = async (req, res, next) => {
+    try {
+        const assets = await Asset.find()
+        .populate("createdBy", "fullName email")
+        .populate("assignedTo", "fullName email")
+        .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Assets fetched successfully",
+            count: assets.length,
+            data: assets,
+        });
+    } catch (error) {
+
+    }
+}
