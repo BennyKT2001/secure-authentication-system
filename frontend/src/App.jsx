@@ -1,5 +1,6 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/public/LandingPage.jsx';
+import LoginPage from './pages/auth/LoginPage.jsx';
 
 function ComingSoonPage({ title }) {
   return (
@@ -30,18 +31,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/login"
-          element={<ComingSoonPage title="Sign in to AssetGuard" />}
-        />
-        <Route
-          path="/register"
-          element={<ComingSoonPage title="Create your AssetGuard account" />}
-        />
-        <Route
-          path="*"
-          element={<ComingSoonPage title="Page not found" />}
-        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<ComingSoonPage title="Create your AssetGuard account" />} />
+        <Route path="*" element={<ComingSoonPage title="Page not found" />} />
       </Routes>
     </BrowserRouter>
   );
