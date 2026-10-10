@@ -34,8 +34,14 @@ const assetSchema = new mongoose.Schema ({
 
         status: {
             type: String,
-            enum: ["Available", "Assigned", "Maintenance", "Retired", "Stolen"],
+            enum: ["available", "assigned", "maintenance", "retired", "stolen"],
             default: "active",
+        },
+
+        assignedTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
         },
 
         createdBy: {

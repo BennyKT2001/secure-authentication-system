@@ -61,7 +61,7 @@ export const getAssets = async (req, res, next) => {
         });
 
     } catch (error) {
-
+        next(error);
     }
 };
 
