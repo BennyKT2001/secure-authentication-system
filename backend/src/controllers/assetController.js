@@ -59,7 +59,33 @@ export const getAssets = async (req, res, next) => {
             count: assets.length,
             data: assets,
         });
+
     } catch (error) {
 
     }
-}
+};
+
+// * GET ASSET BY ID
+export const getAssetById = async (req, res, next) => {
+    try {
+        const asset = await Asset.findById(req.params.id)
+        .populate("createdBy", "fullName email")
+        .populate("assignedTo", "fullName email");
+
+        if (!asset) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ Asset not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Asset fetched successfully",
+            data: asset
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
