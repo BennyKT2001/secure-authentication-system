@@ -1,24 +1,49 @@
-function App() {
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/public/LandingPage.jsx';
+
+function ComingSoonPage({ title }) {
   return (
-    <main className="min-h-screen bg-surface flex items-center justify-center p-margin">
-      <section className="rounded-xl bg-surface-container-lowest p-space-xl shadow-lg">
-        <p className="mb-space-sm text-label-sm font-label-md uppercase tracking-wider text-secondary">
-          AssetGuard design system
+    <main className="flex min-h-screen items-center justify-center bg-surface px-margin">
+      <section className="max-w-md rounded-xl bg-surface-container-lowest p-space-xl text-center shadow-lg">
+        <p className="text-label-sm font-label-md uppercase tracking-wider text-secondary">
+          AssetGuard
         </p>
 
-        <h1 className="text-display-lg font-display-lg text-on-surface">
-          Tailwind is working
+        <h1 className="mt-space-sm text-headline-lg font-headline-lg text-on-surface">
+          {title}
         </h1>
 
-        <p className="mt-space-sm text-body-lg text-on-surface-variant">
-          The Stitch palette is now available in React.
+        <p className="mt-space-sm text-body-md text-on-surface-variant">
+          This screen will be implemented in the next authentication section.
         </p>
 
-        <button className="mt-space-lg rounded-lg bg-secondary px-space-lg py-space-sm text-label-md font-label-md text-on-secondary transition-colors hover:bg-secondary-container">
-          Test primary action
-        </button>
+        <Link to="/" className="mt-space-lg inline-flex rounded-lg bg-secondary px-space-lg py-space-sm text-label-md font-label-md text-on-secondary transition-colors hover:bg-secondary-container" >
+          Back to home
+        </Link>
       </section>
     </main>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/login"
+          element={<ComingSoonPage title="Sign in to AssetGuard" />}
+        />
+        <Route
+          path="/register"
+          element={<ComingSoonPage title="Create your AssetGuard account" />}
+        />
+        <Route
+          path="*"
+          element={<ComingSoonPage title="Page not found" />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

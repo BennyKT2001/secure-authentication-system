@@ -1,4 +1,4 @@
-import { Github, Instagram, Linkedin, ShieldCheck, Twitter } from 'lucide-react';
+import { Code2, ShieldCheck } from 'lucide-react';
 // import { Link } from 'react-router-dom';
 import BrandLogo from '../ui/BrandLogo.jsx';
 
@@ -35,10 +35,10 @@ const footerGroups = [
 ];
 
 const socialLinks = [
-    { label: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com' },
-    { label: 'GitHub', icon: Github, href: 'https://github.com' },
-    { label: 'X / Twitter', icon: Twitter, href: 'https://x.com' },
-    { label: 'Instagram', icon: Instagram, href: 'https://www.instagram.com' },
+    { label: 'LinkedIn', icon: Code2, href: 'https://www.linkedin.com' },
+    { label: 'GitHub', icon: Code2, href: 'https://github.com' },
+    { label: 'X / Twitter', icon: Code2, href: 'https://x.com' },
+    { label: 'Instagram', icon: Code2, href: 'https://www.instagram.com' },
 ];
 
 function PublicFooter( ) {
