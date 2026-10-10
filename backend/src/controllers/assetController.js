@@ -31,7 +31,7 @@ export const createAsset = async (req, res, next) => {
             category,
             serialNumber: serialNumber.toUpperCase(),
             status,
-            createdBy: req.user._id,
+            createdBy: req.user.id,
         });
 
         return res.status(201).json({
