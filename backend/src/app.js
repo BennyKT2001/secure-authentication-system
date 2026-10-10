@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import assetRoutes from "./routes/assetRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -40,6 +41,9 @@ app.use("/api/auth", authRoutes);
 
 // * Assets Routes
 app.use("/api/assets", assetRoutes);
+
+// * User Routes
+app.use("/api/users", userRoutes);
 
 //! Health check endpoint
 app.get("/api/health", (req, res) => {
