@@ -58,7 +58,7 @@ const navigationGroups = [
     },
 ];
 
-function Sidebar({ onNavigate }) {
+function Sidebar({ onNavigate, onLogout }) {
     return (
         <aside className="flex h-full w-full flex-col bg-surface-container-lowest px-space-md py-space-lg">
             <div className="px-space-sm">
@@ -110,7 +110,7 @@ function Sidebar({ onNavigate }) {
                     </div>
                 </div>
 
-                <button type="button" className="mt-space-md inline-flex items-center gap-space-xs text-label-sm font-label-md text-secondary-fixed hover:underline" onClick={() => {}} >
+                <button type="button" className="mt-space-md inline-flex items-center gap-space-xs text-label-sm font-label-md text-secondary-fixed hover:underline" onClick={onLogout} >
                     <LogOut size={15} />
                     Sign out
                 </button>

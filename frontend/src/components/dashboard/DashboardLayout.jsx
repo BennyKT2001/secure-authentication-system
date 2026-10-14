@@ -3,10 +3,21 @@ import { X } from 'lucide-react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import Sidebar from './Sidebar.jsx';
 import Topbar from './Topbar.jsx';
+import authApi from '../../services/api.js';
+import { useNavigate } from 'react-router-dom';
 
 function DashboardLayout() {
     const { user } = useOutletContext();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            await authApi.logout();
+            } finally {
+            navigate('/login', { replace: true });
+            }
+    };
 
     const closeSidebar = () => setIsSidebarOpen(false);
 
@@ -35,7 +46,7 @@ function DashboardLayout() {
                         <X size={19} />
                     </button>
 
-                    <Sidebar onNavigate={closeSidebar} />
+                    <Sidebar onNavigate={closeSidebar} onLogout={handleLogout} />
                 </div>
             </aside>
 
