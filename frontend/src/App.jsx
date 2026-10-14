@@ -5,6 +5,7 @@ import VerifyLoginOtpPage from './pages/auth/VerifyLoginOtpPage.jsx';
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import DashboardLayout from "./components/dashboard/DashboardLayout.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+import AssetInventoryPage from "./pages/admin/AssetInventoryPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -41,13 +42,11 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/assets" element={<AssetInventoryPage />} />
           </Route>
         </Route>
 
-        <Route
-          path="/register"
-          element={<ComingSoonPage title="Create your AssetGuard account" />}
-        />
+        <Route path="/register" element={<ComingSoonPage title="Create your AssetGuard account" />} />
 
         <Route path="*" element={<ComingSoonPage title="Page not found" />} />
       </Routes>

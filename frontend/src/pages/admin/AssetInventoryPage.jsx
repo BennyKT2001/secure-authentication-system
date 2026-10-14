@@ -1,0 +1,221 @@
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Boxes,
+  Filter,
+  Search,
+  SlidersHorizontal,
+} from 'lucide-react';
+import StatusBadge from '../../components/dashboard/StatusBadge.jsx';
+import assetApi from '../../services/assetApi.js';
+
+const statusOptions = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'available', label: 'Available' },
+  { value: 'assigned', label: 'Assigned' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'retired', label: 'Retired' },
+];
+
+function AssetInventoryPage() {
+    const [assets, setAssets] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+        const loadAssets = async () => {
+            try {
+            const response = await assetApi.getAssets();
+            setAssets(response.data || []);
+            } catch (error) {
+            setErrorMessage(
+                error.message || 'Unable to load the asset inventory.',
+            );
+            } finally {
+            setIsLoading(false);
+            }
+        };
+
+        loadAssets();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, []);
+
+    const filteredAssets = useMemo(() => {
+        const normalizedSearch = searchTerm.trim().toLowerCase();
+
+        return assets.filter((asset) => {
+        const matchesSearch =
+            !normalizedSearch ||
+            [
+            asset.name,
+            asset.serialNumber,
+            asset.category,
+            asset.description,
+            ]
+            .filter(Boolean)
+            .some((value) =>
+                value.toLowerCase().includes(normalizedSearch),
+            );
+
+        const matchesStatus =
+            statusFilter === 'all' ||
+            asset.status?.toLowerCase() === statusFilter;
+
+        return matchesSearch && matchesStatus;
+        });
+    }, [assets, searchTerm, statusFilter]);
+
+    return (
+        <div className="mx-auto max-w-[1600px]">
+            <div className="flex flex-col justify-between gap-space-lg lg:flex-row lg:items-end">
+                <div>
+                    <p className="text-label-sm font-label-md uppercase tracking-wider text-secondary">
+                        Administration
+                    </p>
+
+                    <h1 className="mt-space-sm text-headline-lg font-headline-lg tracking-tight md:text-display-lg">
+                        Assets inventory
+                    </h1>
+
+                    <p className="mt-space-sm max-w-2xl text-body-md text-on-surface-variant">
+                        Search, review and monitor every registered company asset.
+                    </p>
+                </div>
+
+                <div className="inline-flex items-center gap-space-sm text-label-md text-on-surface-variant">
+                    <Boxes size={18} className="text-secondary" />
+                    {isLoading ? 'Loading assets...' : `${filteredAssets.length} visible assets`}
+                </div>
+            </div>
+
+            {errorMessage && (
+                <div role="alert" className="mt-space-lg rounded-lg bg-error-container px-space-md py-space-sm text-body-sm text-on-error-container" >
+                    {errorMessage}
+                </div>
+            )}
+
+            <section className="mt-space-xl overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm ring-1 ring-outline-variant/20">
+                <div className="flex flex-col gap-space-md border-b border-outline-variant/30 p-space-lg lg:flex-row lg:items-center lg:justify-between">
+                    <div className="relative w-full lg:max-w-xl">
+                        <Search
+                        size={18}
+                        className="pointer-events-none absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant"
+                        />
+
+                        <input type="search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Search by name, serial number or category..."
+                        aria-label="Search assets"
+                        className="h-11 w-full rounded-lg bg-surface-container-low pl-10 pr-space-md text-body-md outline-none placeholder:text-on-surface-variant/70 focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-space-sm">
+                        <SlidersHorizontal size={17} className="text-on-surface-variant" />
+
+                        <label htmlFor="status-filter" className="sr-only" >
+                            Filter assets by status
+                        </label>
+
+                        <select id="status-filter" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}
+                        className="h-11 rounded-lg bg-surface-container-low px-space-md text-label-md outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary" >
+                            {statusOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+
+                        <Filter size={17} className="text-secondary" />
+                    </div>
+                </div>
+
+                {isLoading ? (
+                    <div className="space-y-space-sm p-space-lg">
+                        {[1, 2, 3, 4].map((item) => (
+                        <div
+                            key={item}
+                            className="h-16 animate-pulse rounded-lg bg-surface-container-low"
+                        />
+                        ))}
+                    </div>
+                ) : filteredAssets.length === 0 ? (
+                    <div className="p-space-2xl text-center">
+                        <Boxes size={32} className="mx-auto text-on-surface-variant" />
+
+                        <h2 className="mt-space-md text-headline-md font-headline-md">
+                            No matching assets
+                        </h2>
+
+                        <p className="mt-space-xs text-body-md text-on-surface-variant">
+                        Try another search term or change the selected status filter.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[760px] text-left">
+                            <thead className="bg-surface-container-low text-label-sm uppercase tracking-wider text-on-surface-variant">
+                                <tr>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Asset
+                                    </th>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Category
+                                    </th>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Serial number
+                                    </th>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Status
+                                    </th>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Created
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {filteredAssets.map((asset) => (
+                                    <tr key={asset._id} className="border-t border-outline-variant/20 transition-colors hover:bg-surface-container-low" >
+                                        <td className="px-space-lg py-space-md">
+                                            <p className="text-label-md font-label-md font-semibold text-on-surface">
+                                                {asset.name}
+                                            </p>
+
+                                            <p className="mt-0.5 max-w-xs truncate text-body-sm text-on-surface-variant">
+                                                {asset.description || 'No description provided'}
+                                            </p>
+                                        </td>
+
+                                        <td className="px-space-lg py-space-md text-body-md text-on-surface-variant">
+                                            {asset.category || '—'}
+                                        </td>
+
+                                        <td className="px-space-lg py-space-md font-code-sm text-on-surface-variant">
+                                            {asset.serialNumber}
+                                        </td>
+
+                                        <td className="px-space-lg py-space-md">
+                                            <StatusBadge status={asset.status} />
+                                        </td>
+
+                                        <td className="px-space-lg py-space-md text-body-sm text-on-surface-variant">
+                                            {asset.createdAt
+                                                ? new Date(asset.createdAt).toLocaleDateString()
+                                                : '—'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
+        </div>
+    );
+}
+
+export default AssetInventoryPage;
