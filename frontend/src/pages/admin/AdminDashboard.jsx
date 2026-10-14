@@ -1,44 +1,44 @@
 import { Activity, Boxes, CheckCircle2, ClipboardList, ShieldCheck, UsersRound, Wrench } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import StatCard from '../../components/dashboard/StatCard.jsx';
 import StatusBadge from '../../components/dashboard/StatusBadge.jsx';
 import assetApi from '../../services/assetApi.js';
+import AddAssetModal from '../../components/dashboard/AddAssetModal.jsx';
 
 function AdminDashboard() {
     const [assets, setAssets] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isAddAssetOpen, setIsAddAssetOpen] = useState(false);
+    const [isCreatingAsset, setIsCreatingAsset] = useState(false);
+
+
     // Load assets
-    useEffect(() => {
-        let isMounted = true;
+    const loadAssets = useCallback(async () => {
+        setIsLoading(true);
+        setErrorMessage('');
 
-        const loadAssets = async () => {
-            try {
-                const response = await assetApi.getAssets();
-
-                if (isMounted) {
-                setAssets(response.data || []);
-                }
-            } catch (error) {
-                if (isMounted) {
-                setErrorMessage(
-                    error.message || 'Unable to load the asset inventory.',
-                );
-                }
-            } finally {
-                if (isMounted) {
-                setIsLoading(false);
-                }
-            }
-        };
-
-            loadAssets();
-
-            return () => {
-            isMounted = false;
-            };
+        try {
+            const response = await assetApi.getAssets();
+            setAssets(response.data || []);
+        } catch (error) {
+            setErrorMessage(
+            error.message || 'Unable to load the asset inventory.',
+            );
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
+
+        useEffect(() => {
+            const timer = window.setTimeout(() => {
+            loadAssets();
+        }, 0);
+
+            return () => window.clearTimeout(timer);
+        }, [loadAssets]);
 
     const stats = useMemo(() => {
         const countByStatus = (status) =>
@@ -53,6 +53,34 @@ function AdminDashboard() {
         maintenance: countByStatus('maintenance'),
         };
     }, [assets]);
+
+      const handleCreateAsset = async (assetData) => {
+        setIsCreatingAsset(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            await assetApi.createAsset(assetData);
+            await loadAssets();
+
+            setIsAddAssetOpen(false);
+            setSuccessMessage('Asset created successfully.');
+
+            window.setTimeout(() => {
+                setSuccessMessage('');
+            }, 4000);
+
+            return true;
+        } catch (error) {
+                setErrorMessage(
+                error.message || 'Unable to create the asset.',
+            );
+
+            return false;
+        } finally {
+            setIsCreatingAsset(false);
+        }
+    };
 
     const recentAssets = assets.slice(0, 6);
 
@@ -75,7 +103,11 @@ function AdminDashboard() {
                 </div>
 
                 <div className="flex flex-wrap gap-space-sm">
-                    <button type="button" className="inline-flex h-10 items-center gap-space-sm rounded-lg bg-secondary px-space-md text-label-md font-label-md font-semibold text-on-secondary shadow-sm transition-colors hover:bg-secondary-container" >
+                    <button type="button" onClick={() => {
+                        setErrorMessage('');
+                        setSuccessMessage('');
+                        setIsAddAssetOpen(true);
+                    }} className="inline-flex h-10 items-center gap-space-sm rounded-lg bg-secondary px-space-md text-label-md font-label-md font-semibold text-on-secondary shadow-sm transition-colors hover:bg-secondary-container"c>
                         <Boxes size={17} />
                         Add new asset
                     </button>
@@ -85,6 +117,12 @@ function AdminDashboard() {
             {errorMessage && (
                 <div role="alert" className="mt-space-lg rounded-lg bg-error-container px-space-md py-space-sm text-body-sm text-on-error-container" >
                     {errorMessage}
+                </div>
+            )}
+
+            {successMessage && (
+                <div role="status" className="mt-space-lg rounded-lg bg-surface-container px-space-md py-space-sm text-body-sm text-on-tertiary-container" >
+                    {successMessage}
                 </div>
             )}
 
@@ -263,6 +301,10 @@ function AdminDashboard() {
                         </article>
                 </aside>
             </section>
+
+            <AddAssetModal isOpen={isAddAssetOpen} onClose={() => setIsAddAssetOpen(false)}
+            onSubmit={handleCreateAsset} isSubmitting={isCreatingAsset} />
+
         </div>
     );
 }
