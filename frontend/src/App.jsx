@@ -2,6 +2,8 @@ import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/public/LandingPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import VerifyLoginOtpPage from './pages/auth/VerifyLoginOtpPage.jsx';
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import DashboardLayout from "./components/dashboard/DashboardLayout.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -34,7 +36,11 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-login-otp" element={<VerifyLoginOtpPage />} />
-        <Route path="/dashboard" element={<ComingSoonPage title="AssetGuard dashboard" />} />
+
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<AdminDashboard />} />
+        </Route>
+
         <Route path="/register" element={<ComingSoonPage title="Create your AssetGuard account" />} />
         <Route path="*" element={<ComingSoonPage title="Page not found" />} />
       </Routes>
