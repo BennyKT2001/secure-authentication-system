@@ -12,7 +12,6 @@ async function apiRequest(endpoint, options = {} ) {
     });
 
     let payload;
-
     try {
         payload = await response.json();
     } catch {
@@ -36,21 +35,33 @@ async function apiRequest(endpoint, options = {} ) {
 export const authApi = {
     login: ({ email, password }) =>
         apiRequest('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
         }),
 
     verifyLoginOtp: ({ email, otp }) =>
         apiRequest('/auth/verify-login-otp', {
-        method: 'POST',
-        body: JSON.stringify({ email, otp }),
+            method: 'POST',
+            body: JSON.stringify({ email, otp }),
+        }),
+
+    register: ({ fullName, email, phoneNumber, password }) =>
+        apiRequest('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ fullName, email, phoneNumber, password }),
+        }),
+
+    verifyRegistrationOtp: ({ email, otp }) =>
+        apiRequest('/auth/verify-otp', {
+            method: 'POST',
+            body: JSON.stringify({ email, otp }),
         }),
 
     getCurrentUser: () => apiRequest('/auth/me'),
 
     logout: () =>
         apiRequest('/auth/logout', {
-        method: 'POST',
+            method: 'POST',
         }),
 };
 

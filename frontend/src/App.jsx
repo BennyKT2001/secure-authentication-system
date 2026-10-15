@@ -6,6 +6,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import DashboardLayout from "./components/dashboard/DashboardLayout.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import AssetInventoryPage from "./pages/admin/AssetInventoryPage.jsx";
+import RegisterPage from "./pages/auth/RegisterPage.jsx";
+import VerifyRegistrationOtpPage from "./pages/auth/VerifyRegistrationOtpPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -38,6 +40,9 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-login-otp" element={<VerifyLoginOtpPage />} />
+
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-registration-otp" element={<VerifyRegistrationOtpPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
