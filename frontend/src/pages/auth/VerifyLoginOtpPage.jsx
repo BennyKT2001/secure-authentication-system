@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  Clock3,
-  MailCheck,
-  ShieldCheck,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, MailCheck, ShieldCheck, } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/ui/BrandLogo.jsx';
 import { authApi } from '../../services/api.js';
@@ -87,25 +80,30 @@ function VerifyLoginOtpPage() {
         setIsSubmitting(true);
 
         try {
-        const response = await authApi.verifyLoginOtp({
-            email,
-            otp: code,
-        });
-
-        setSuccessMessage(response.message || 'Login verified successfully.');
-
-        window.setTimeout(() => {
-            navigate('/dashboard', {
-            replace: true,
-            state: { user: response.data },
+            const response = await authApi.verifyLoginOtp({
+                email,
+                otp: code,
             });
-        }, 500);
+
+            setSuccessMessage(response.message || 'Login verified successfully.');
+
+            window.setTimeout(() => {
+                const destination =
+                    response.data?.role === 'admin'
+                    ? '/dashboard'
+                    : '/my-assets';
+
+                navigate(destination, {
+                    replace: true,
+                    state: { user: response.data },
+                });
+            }, 500);
         } catch (error) {
-        setErrorMessage(
+            setErrorMessage(
             error.message || 'The verification code is invalid or expired.',
-        );
+            );
         } finally {
-        setIsSubmitting(false);
+            setIsSubmitting(false);
         }
     };
 
