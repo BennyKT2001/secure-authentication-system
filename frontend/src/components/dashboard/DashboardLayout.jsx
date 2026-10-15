@@ -46,7 +46,7 @@ function DashboardLayout() {
                         <X size={19} />
                     </button>
 
-                    <Sidebar onNavigate={closeSidebar} onLogout={handleLogout} />
+                    <Sidebar user={user} onNavigate={closeSidebar} onLogout={handleLogout} />
                 </div>
             </aside>
 
@@ -56,7 +56,7 @@ function DashboardLayout() {
 
                 {/* Main content */}
                 <main className="min-h-[calc(100vh-4rem)] p-margin md:p-margin-desktop">
-                    <Outlet />
+                    <Outlet context={{ user }} />
                 </main>
             </div>
         </div>

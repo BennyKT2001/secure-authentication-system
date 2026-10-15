@@ -10,6 +10,7 @@ import RegisterPage from "./pages/auth/RegisterPage.jsx";
 import VerifyRegistrationOtpPage from "./pages/auth/VerifyRegistrationOtpPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 import MyAssignedAssetsPage from "./pages/employee/MyAssignedAssetsPage.jsx";
+import RoleRoute from "./components/auth/RoleRoute.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -48,15 +49,22 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<AdminDashboard />} />
-            <Route path="/assets" element={<AssetInventoryPage />} />
-            <Route path="/users" element={<UserManagementPage />} />
-            <Route path="/my-assets" element={<MyAssignedAssetsPage />} />
+              <Route element={<RoleRoute allowedRoles={['admin']} />}>
+                <Route path="/dashboard" element={<AdminDashboard />} />
+                <Route path="/assets" element={<AssetInventoryPage />} />
+                <Route path="/users" element={<UserManagementPage />} />
+              </Route>
+
+              <Route element={<RoleRoute allowedRoles={['admin', 'employee']} />}>
+                <Route path="/my-assets" element={<MyAssignedAssetsPage />} />
+              </Route>
+
+              <Route path="/settings" element={<ComingSoonPage title="Settings & Security" />} />
+              <Route path="/profile" element={<ComingSoonPage title="Profile" />} />
           </Route>
         </Route>
 
-        <Route path="/register" element={<ComingSoonPage title="Create your AssetGuard account" />} />
-
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="*" element={<ComingSoonPage title="Page not found" />} />
       </Routes>
     </BrowserRouter>

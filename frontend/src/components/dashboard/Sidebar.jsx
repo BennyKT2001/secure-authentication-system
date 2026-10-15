@@ -1,12 +1,4 @@
-import {
-  Boxes,
-  LayoutDashboard,
-  LogOut,
-  Settings2,
-  ShieldCheck,
-  UserRound,
-  UsersRound,
-} from 'lucide-react';
+import { Boxes, LayoutDashboard, LogOut, Settings2, ShieldCheck, UserRound, UsersRound, } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import BrandLogo from '../ui/BrandLogo.jsx';
 
@@ -58,7 +50,21 @@ const navigationGroups = [
     },
 ];
 
-function Sidebar({ onNavigate, onLogout }) {
+function Sidebar({ user, onNavigate, onLogout }) {
+    const isAdmin = user?.role === 'admin';
+
+    const visibleGroups = navigationGroups
+    .map((group) => ({
+        ...group,
+        items:
+        group.label === 'Administration'
+            ? isAdmin
+            ? group.items
+            : []
+            : group.items,
+    }))
+    .filter((group) => group.items.length > 0);
+
     return (
         <aside className="flex h-full w-full flex-col bg-surface-container-lowest px-space-md py-space-lg">
             <div className="px-space-sm">
@@ -66,7 +72,7 @@ function Sidebar({ onNavigate, onLogout }) {
             </div>
 
             <nav className="mt-space-xl flex-1 space-y-space-lg" aria-label="Dashboard navigation">
-                {navigationGroups.map((group) => (
+                {visibleGroups.map((group) => (
                     <div key={group.label}>
                         <p className="px-space-sm text-label-sm font-label-md uppercase tracking-wider text-on-surface-variant">
                             {group.label}
