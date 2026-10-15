@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import AssetInventoryPage from "./pages/admin/AssetInventoryPage.jsx";
 import RegisterPage from "./pages/auth/RegisterPage.jsx";
 import VerifyRegistrationOtpPage from "./pages/auth/VerifyRegistrationOtpPage.jsx";
+import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/assets" element={<AssetInventoryPage />} />
+            <Route path="/users" element={<UserManagementPage />} />
           </Route>
         </Route>
 
