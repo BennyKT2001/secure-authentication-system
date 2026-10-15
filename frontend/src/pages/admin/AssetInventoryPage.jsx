@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Boxes,
-  Filter,
-  Search,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { Boxes, Edit, Filter, Search, SlidersHorizontal, Trash2, } from 'lucide-react';
 import StatusBadge from '../../components/dashboard/StatusBadge.jsx';
 import assetApi from '../../services/assetApi.js';
+import AssetDetailsModal from "../../components/dashboard/AssetDetailsModal.jsx";
+import DeleteAssetDialog from "../../components/dashboard/DeleteAssetDialog.jsx";
 
 const statusOptions = [
   { value: 'all', label: 'All statuses' },
@@ -22,6 +19,15 @@ function AssetInventoryPage() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [selectedAsset, setSelectedAsset] = useState(null);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+
+    const [assetToDelete, setAssetToDelete] = useState(null);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const timer = window.setTimeout(() => {
@@ -69,6 +75,86 @@ function AssetInventoryPage() {
         });
     }, [assets, searchTerm, statusFilter]);
 
+    const handleOpenDetails = (asset) => {
+        setSelectedAsset(asset);
+        setSuccessMessage('');
+        setErrorMessage('');
+        setIsDetailsOpen(true);
+    };
+
+    const handleCloseDetails = () => {
+        setIsDetailsOpen(false);
+        setSelectedAsset(null);
+    };
+
+    // Update Asset
+    const handleSaveAsset = async (id, assetData) => {
+        setIsSaving(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            const response = await assetApi.updateAsset(id, assetData);
+            const updatedAsset = response.data;
+
+            setAssets((currentAssets) =>
+                currentAssets.map((asset) =>
+                    asset._id === id ? updatedAsset : asset,
+                ),
+            );
+
+            setSelectedAsset(updatedAsset);
+            setSuccessMessage('Asset updated successfully.');
+
+            return true;
+        } catch (error) {
+            setErrorMessage(
+            error.message || 'Unable to update the asset.',
+            );
+
+            return false;
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+        const handleOpenDelete = (asset) => {
+            setAssetToDelete(asset);
+            setIsDeleteOpen(true);
+        };
+
+        const handleCloseDelete = () => {
+            setAssetToDelete(null);
+            setIsDeleteOpen(false);
+        };
+
+        const handleDeleteAsset = async () => {
+            if (!assetToDelete) {
+                return;
+            }
+
+            setIsDeleting(true);
+            setErrorMessage('');
+            setSuccessMessage('');
+
+            try {
+                await assetApi.deleteAsset(assetToDelete._id);
+
+                setAssets((currentAssets) =>
+                    currentAssets.filter((asset) => asset._id !== assetToDelete._id),
+                );
+
+                handleCloseDelete();
+                setSuccessMessage('Asset deleted successfully.');
+            } catch (error) {
+                setErrorMessage(
+                    error.message || 'Unable to delete the asset.',
+                );
+            } finally {
+                setIsDeleting(false);
+            }
+        };
+
     return (
         <div className="mx-auto max-w-[1600px]">
             <div className="flex flex-col justify-between gap-space-lg lg:flex-row lg:items-end">
@@ -95,6 +181,12 @@ function AssetInventoryPage() {
             {errorMessage && (
                 <div role="alert" className="mt-space-lg rounded-lg bg-error-container px-space-md py-space-sm text-body-sm text-on-error-container" >
                     {errorMessage}
+                </div>
+            )}
+
+            {successMessage && (
+                <div role="status" className="mt-space-lg rounded-lg bg-surface-container px-space-md py-space-sm text-body-sm text-on-tertiary-container" >
+                    {successMessage}
                 </div>
             )}
 
@@ -156,7 +248,7 @@ function AssetInventoryPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[760px] text-left">
+                        <table className="w-full min-w-[900px] text-left">
                             <thead className="bg-surface-container-low text-label-sm uppercase tracking-wider text-on-surface-variant">
                                 <tr>
                                     <th className="px-space-lg py-space-md font-label-md">
@@ -174,12 +266,15 @@ function AssetInventoryPage() {
                                     <th className="px-space-lg py-space-md font-label-md">
                                         Created
                                     </th>
+                                    <th className="px-space-lg py-space-md text-right font-label-md">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {filteredAssets.map((asset) => (
-                                    <tr key={asset._id} className="border-t border-outline-variant/20 transition-colors hover:bg-surface-container-low" >
+                                    <tr key={asset._id} className="cursor-pointer border-t border-outline-variant/20 transition-colors hover:bg-surface-container-low" onClick={() => handleOpenDetails(asset)} >
                                         <td className="px-space-lg py-space-md">
                                             <p className="text-label-md font-label-md font-semibold text-on-surface">
                                                 {asset.name}
@@ -207,6 +302,30 @@ function AssetInventoryPage() {
                                                 ? new Date(asset.createdAt).toLocaleDateString()
                                                 : '—'}
                                         </td>
+
+                                        <td className="px-space-lg py-space-md text-right">
+                                            <div className="flex justify-end gap-space-xs">
+                                                <button className="inline-flex h-9 items-center gap-space-xs rounded-lg px-space-sm text-label-sm font-label-md text-secondary hover:bg-primary-fixed"
+                                                aria-label={`Edit ${asset.name}`} type="button"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleOpenDetails(asset);
+                                                }}>
+                                                    <Edit size={15} />
+                                                    View / edit
+                                                </button>
+
+                                                <button className="inline-flex h-9 items-center gap-space-xs rounded-lg px-space-sm text-label-sm font-label-md text-error hover:bg-error-container"
+                                                aria-label={`Delete ${asset.name}`} type="button"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleOpenDelete(asset);
+                                                }} >
+                                                    <Trash2 size={15} />
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -214,6 +333,11 @@ function AssetInventoryPage() {
                     </div>
                 )}
             </section>
+            <AssetDetailsModal asset={selectedAsset} isOpen={isDetailsOpen}
+                onClose={handleCloseDetails} onSave={handleSaveAsset} isSaving={isSaving} />
+
+            <DeleteAssetDialog asset={assetToDelete} isOpen={isDeleteOpen} onClose={handleCloseDelete}
+                onConfirm={handleDeleteAsset} isDeleting={isDeleting} />
         </div>
     );
 }
