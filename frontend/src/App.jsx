@@ -9,6 +9,7 @@ import AssetInventoryPage from "./pages/admin/AssetInventoryPage.jsx";
 import RegisterPage from "./pages/auth/RegisterPage.jsx";
 import VerifyRegistrationOtpPage from "./pages/auth/VerifyRegistrationOtpPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
+import MyAssignedAssetsPage from "./pages/employee/MyAssignedAssetsPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -50,6 +51,7 @@ function App() {
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/assets" element={<AssetInventoryPage />} />
             <Route path="/users" element={<UserManagementPage />} />
+            <Route path="/my-assets" element={<MyAssignedAssetsPage />} />
           </Route>
         </Route>
 

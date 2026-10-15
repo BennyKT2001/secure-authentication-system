@@ -8,6 +8,9 @@ export const assetApi = {
     }),
     // Get All Assets
     getAssets: () => apiRequest('/assets'),
+    // Get My Assets
+    getMyAssets: () => apiRequest('/assets/my-assets'),
+    // Get Asset by ID
     getAssetById: (id) => apiRequest(`/assets/${id}`),
     // Update Asset
     updateAsset: (id, assetData) => apiRequest(`/assets/${id}`, {
