@@ -65,6 +65,25 @@ export const getAssets = async (req, res, next) => {
     }
 };
 
+// * GET MY ASSETS
+export const getMyAssets = async (req, res, next) => {
+    try{
+        const assets = await Asset.find({assignedTo: req.user.id,})
+        .populate("createdBy", "fullName email")
+        .populate("assignedTo", "fullName email")
+        .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Assets fetched successfully",
+            count: assets.length,
+            data: assets,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 // * GET ASSET BY ID
 export const getAssetById = async (req, res, next) => {
     try {

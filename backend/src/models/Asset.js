@@ -35,7 +35,7 @@ const assetSchema = new mongoose.Schema ({
         status: {
             type: String,
             enum: ["available", "assigned", "maintenance", "retired", "stolen"],
-            default: "active",
+            default: "available",
         },
 
         assignedTo: {
