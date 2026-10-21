@@ -12,6 +12,7 @@ import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 import MyAssignedAssetsPage from "./pages/employee/MyAssignedAssetsPage.jsx";
 import RoleRoute from "./components/auth/RoleRoute.jsx";
 import ProfilePage from "./pages/shared/ProfilePage.jsx";
+import SettingsSecurityPage from "./pages/shared/SettingsSecurityPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -60,7 +61,7 @@ function App() {
                 <Route path="/my-assets" element={<MyAssignedAssetsPage />} />
               </Route>
 
-              <Route path="/settings" element={<ComingSoonPage title="Settings & Security" />} />
+              <Route path="/settings" element={<SettingsSecurityPage />} />
               <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
