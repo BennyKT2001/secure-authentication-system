@@ -300,3 +300,89 @@ export const logoutUser = async (req, res, next) => {
         message: "✅ User logged out successfully.",
     });
 };
+
+// * FORGOT PASSWORD
+export const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ User not found",
+            });
+        }
+
+        const otpResult = await createAndSendOtp({
+            userId: user._id,
+            email: user.email,
+            purpose: "passwordReset",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Password reset OTP sent successfully. Please verify your account.",
+            data: {
+                email: user.email,
+                otpExpiresAt: otpResult.expiresAt,
+            },
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        const passwordIsValid =
+            typeof newPassword === "string" && newPassword.length >= 8 &&
+                /[A-Za-z]/.test(newPassword) &&
+                /\d/.test(newPassword) &&
+                /[^A-Za-z0-9]/.test(newPassword);
+
+        if (!passwordIsValid) {
+            return res.status(400).json({
+                success: false,
+                message: "❌ Password must be at least 8 characters long and contain at least one letter, one number, and one special character.",
+            });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ User not found",
+            });
+        }
+
+        const verificationResult = await verifyOtp({
+            userId: user._id,
+            purpose: "passwordReset",
+            otp,
+        });
+
+        if (!verificationResult.success) {
+            return res.status(400).json({
+                success: false,
+                message: verificationResult.message,
+            });
+        }
+
+        const salt = await bcrypt.genSalt(12);
+        user.passwordHash = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Password reset successfully.",
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}

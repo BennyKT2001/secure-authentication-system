@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser, verifyRegistrationOtp, verifyLoginOtp, getCurrentUser, logoutUser } from "../controllers/authController.js";
+import { registerUser, loginUser, verifyRegistrationOtp, verifyLoginOtp, forgotPassword, resetPassword, getCurrentUser, logoutUser } from "../controllers/authController.js";
 import { registerValidator, handleValidationErrors } from "../validators/authValidator.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -29,6 +29,16 @@ router.post("/login", loginUser);
 // @desc    Verify login OTP
 // @access  Public
 router.post("/verify-login-otp", verifyLoginOtp);
+
+// @route   POST /api/auth/forgot-password
+// @desc    Forgot password
+// @access  Public
+router.post("/forgot-password", forgotPassword);
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password
+// @access  Public
+router.post("/reset-password", resetPassword);
 
 // @route   POST /api/auth/logout
 // @desc    Log out a user
