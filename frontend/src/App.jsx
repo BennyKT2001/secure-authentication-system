@@ -13,6 +13,8 @@ import MyAssignedAssetsPage from "./pages/employee/MyAssignedAssetsPage.jsx";
 import RoleRoute from "./components/auth/RoleRoute.jsx";
 import ProfilePage from "./pages/shared/ProfilePage.jsx";
 import SettingsSecurityPage from "./pages/shared/SettingsSecurityPage.jsx";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -48,6 +50,9 @@ function App() {
 
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-registration-otp" element={<VerifyRegistrationOtpPage />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>

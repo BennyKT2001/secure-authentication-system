@@ -179,9 +179,9 @@ function LoginPage() {
                                         Password
                                     </label>
 
-                                    <button type="button" className="text-label-md font-label-md font-semibold text-secondary hover:underline" onClick={() => {}} >
+                                    <Link to="/forgot-password" className="font-label-md font-semibold text-secondary hover:underline">
                                         Forgot password?
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="relative">
