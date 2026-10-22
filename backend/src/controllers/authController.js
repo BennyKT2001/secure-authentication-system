@@ -63,6 +63,46 @@ export const registerUser = async (req, res, next) => {
     }
 }
 
+//* RESEND REGISTRATION OTP
+export const resendRegistrationOtp = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ User not found",
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "❌ This account is already verified. Please log in.",
+            });
+        }
+
+        const otpResult = await createAndSendOtp({
+            userId: user._id,
+            email: user.email,
+            purpose: "registration",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Registration OTP resent successfully. Please check your email.",
+            data: {
+                email: user.email,
+                otpExpiresAt: otpResult.expiresAt,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 //* VERIFY OTP FOR REGISTRATION
 export const verifyRegistrationOtp = async (req, res, next) => {
     try{

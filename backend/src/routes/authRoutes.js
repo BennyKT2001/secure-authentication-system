@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser, verifyRegistrationOtp, verifyLoginOtp, forgotPassword, resetPassword, getCurrentUser, logoutUser } from "../controllers/authController.js";
+import { registerUser, loginUser, verifyRegistrationOtp, resendRegistrationOtp, verifyLoginOtp, forgotPassword, resetPassword, getCurrentUser, logoutUser } from "../controllers/authController.js";
 import { registerValidator, handleValidationErrors } from "../validators/authValidator.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -14,6 +14,11 @@ router.post("/register", registerValidator, handleValidationErrors, registerUser
 // @desc    Verify registration OTP
 // @access  Public
 router.post("/verify-otp", verifyRegistrationOtp);
+
+// @route   POST /api/auth/resend-registration-otp
+// @desc    Resend registration OTP
+// @access  Public
+router.post("/resend-registration-otp", resendRegistrationOtp);
 
 // @route   GET /api/auth/current-user
 // @desc    Get current user
