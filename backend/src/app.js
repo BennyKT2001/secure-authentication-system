@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import assetRoutes from "./routes/assetRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import auditLogRoutes from "./routes/auditLogRoutes.js"
 
 dotenv.config();
 
@@ -44,6 +45,9 @@ app.use("/api/assets", assetRoutes);
 
 // * User Routes
 app.use("/api/users", userRoutes);
+
+// * Audit Log Routes
+app.use("/api/audit-logs", auditLogRoutes);
 
 //! Health check endpoint
 app.get("/api/health", (req, res) => {

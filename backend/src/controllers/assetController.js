@@ -1,5 +1,6 @@
 import Asset from "../models/Asset.js";
 import User from "../models/User.js";
+import { createAuditLog } from "../utils/auditLogger.js"
 
 // * CREATE ASSET
 export const createAsset = async (req, res, next) => {
@@ -51,6 +52,22 @@ export const createAsset = async (req, res, next) => {
             status: validAssignedTo ? "assigned" : "available",
             assignedTo: validAssignedTo,
             createdBy: req.user.id,
+        });
+
+        await createAuditLog({
+            action: validAssignedTo
+                ? "ASSET_ASSIGNED_ON_CREATE"
+                : "ASSET_CREATED",
+            entityType: "Asset",
+            entityId: asset._id,
+            performedBy: req.user.id,
+            description: validAssignedTo
+                ? `Asset "${asset.name}" was created and assigned.`
+                : `Asset "${asset.name}" was created.`,
+            metadata: {
+                serialNumber: asset.serialNumber,
+                assignedTo: validAssignedTo,
+            },
         });
 
         return res.status(201).json({
@@ -186,13 +203,26 @@ export const updateAsset = async (req, res, next) => {
             updates.serialNumber = updates.serialNumber.toUpperCase();
         }
 
+        const existingAsset = await Asset.findById(req.params.id);
+
+        if (!existingAsset) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ Asset not found",
+            });
+        }
+
+        const previousAssignedTo = existingAsset.assignedTo
+            ? existingAsset.assignedTo.toString()
+            : null;
+
         const asset = await Asset.findByIdAndUpdate(
             req.params.id,
             updates,
             {
                 new: true,
                 runValidators: true,
-            }
+            },
         )
             .populate("createdBy", "fullName email")
             .populate("assignedTo", "fullName email");
@@ -204,6 +234,39 @@ export const updateAsset = async (req, res, next) => {
             });
         }
 
+        const currentAssignedTo = asset.assignedTo
+            ? asset.assignedTo._id.toString()
+            : null;
+
+        let auditAction = "ASSET_UPDATED";
+        let auditDescription = `Asset "${asset.name}" was updated.`;
+
+        if (
+            updates.assignedTo !== undefined &&
+            previousAssignedTo !== currentAssignedTo
+        ) {
+            if (currentAssignedTo) {
+                auditAction = "ASSET_ASSIGNED";
+                auditDescription = `Asset "${asset.name}" was assigned to an employee.`;
+            } else {
+                auditAction = "ASSET_UNASSIGNED";
+                auditDescription = `Asset "${asset.name}" was unassigned.`;
+            }
+        }
+
+        await createAuditLog({
+            action: auditAction,
+            entityType: "Asset",
+            entityId: asset._id,
+            performedBy: req.user.id,
+            description: auditDescription,
+            metadata: {
+                previousAssignedTo,
+                currentAssignedTo,
+                status: asset.status,
+            },
+        });
+
         return res.status(200).json({
             success: true,
             message: "✅ Asset updated successfully",
@@ -214,7 +277,7 @@ export const updateAsset = async (req, res, next) => {
     }
 };
 
-// *
+// * Delete Asset
 export const deleteAsset = async (req, res, next) => {
     try {
         const asset = await Asset.findByIdAndDelete(req.params.id);
@@ -227,6 +290,17 @@ export const deleteAsset = async (req, res, next) => {
             });
         }
 
+        await createAuditLog({
+            action: "ASSET_DELETED",
+            entityType: "Asset",
+            entityId: asset._id,
+            performedBy: req.user.id,
+            description: `Asset "${asset.name}" was deleted.`,
+            metadata: {
+                serialNumber: asset.serialNumber,
+            },
+        });
+
         return res.status(200).json({
             success: true,
             message: "✅ Asset deleted successfully",
@@ -234,6 +308,6 @@ export const deleteAsset = async (req, res, next) => {
         });
 
     } catch (error) {
-
+        next(error)
     }
 }

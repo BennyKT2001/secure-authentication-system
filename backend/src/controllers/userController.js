@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { createAuditLog } from "../utils/auditLogger.js";
 
 // * GET ALL USERS
 export const getUsers = async (req, res, next) => {
@@ -66,6 +67,15 @@ export const updateUser = async (req, res, next) => {
         if (role !== undefined) updates.role = role;
         if (isActive !== undefined) updates.isActive = isActive;
 
+        const existingUser = await User.findById(req.params.id);
+
+        if (!existingUser) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ User not found",
+            });
+        }
+
         const user = await User.findByIdAndUpdate(req.params.id, updates, {
             new: true,
             runValidators: true,
@@ -78,6 +88,21 @@ export const updateUser = async (req, res, next) => {
                 message: "❌ User not found",
             });
         }
+
+        await createAuditLog({
+            action: "USER_UPDATED",
+            entityType: "User",
+            entityId: user._id,
+            performedBy: req.user.id,
+            description: `User "${user.fullName}" was updated.`,
+            metadata: {
+                updatedFields: Object.keys(updates),
+                previousRole: existingUser.role,
+                currentRole: user.role,
+                previousIsActive: existingUser.isActive,
+                currentIsActive: user.isActive,
+            },
+        });
 
         return res.status(200).json({
             success: true,
@@ -102,6 +127,18 @@ export const deleteUser = async (req, res, next) => {
                 message: "❌ User not found",
             });
         }
+
+        await createAuditLog({
+            action: "USER_DELETED",
+            entityType: "User",
+            entityId: user._id,
+            performedBy: req.user.id,
+            description: `User "${user.fullName}" was deleted.`,
+            metadata: {
+                email: user.email,
+                role: user.role,
+            },
+        });
 
         return res.status(200).json({
             success: true,
