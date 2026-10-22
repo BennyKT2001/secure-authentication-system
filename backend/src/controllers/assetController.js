@@ -1,9 +1,10 @@
 import Asset from "../models/Asset.js";
+import User from "../models/User.js";
 
 // * CREATE ASSET
 export const createAsset = async (req, res, next) => {
     try {
-        const {name, description, category, serialNumber, status} = req.body;
+        const {name, description, category, serialNumber, status, assignedTo} = req.body;
 
         if (!name || !description || !category || !serialNumber || !status) {
             return res.status(400).json({
@@ -24,13 +25,31 @@ export const createAsset = async (req, res, next) => {
             });
         }
 
+        // ? Verify assignedTo
+        let validAssignedTo = null;
+        if (assignedTo) {
+            const employee = await User.findOne({
+                _id: assignedTo,
+                role: "employee",
+                isActive: true,
+            });
+            if (!employee) {
+                return res.status(400).json({
+                    success: false,
+                    message: "❌ The selected user is not an active employee.",
+                });
+            }
+            validAssignedTo = employee._id;
+        }
+
         // ? Create a New Asset
         const asset = await Asset.create({
             name,
             description,
             category,
             serialNumber: serialNumber.toUpperCase(),
-            status,
+            status: validAssignedTo ? "assigned" : "available",
+            assignedTo: validAssignedTo,
             createdBy: req.user.id,
         });
 
@@ -118,7 +137,7 @@ export const updateAsset = async (req, res, next) => {
             "category",
             "serialNumber",
             "status",
-            "assignedTo"
+            "assignedTo",
         ];
 
         const updates = {};
@@ -128,6 +147,38 @@ export const updateAsset = async (req, res, next) => {
             if (req.body[field] !== undefined) {
                 updates[field] = req.body[field];
             }
+        }
+
+        // ? Validate assigned employee
+        if (updates.assignedTo !== undefined) {
+            if (updates.assignedTo === null || updates.assignedTo === "") {
+                updates.assignedTo = null;
+            } else {
+                const employee = await User.findOne({
+                    _id: updates.assignedTo,
+                    role: "employee",
+                    isActive: true,
+                });
+
+                if (!employee) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "❌ The selected user is not an active employee.",
+                    });
+                }
+
+                updates.assignedTo = employee._id;
+            }
+        }
+
+        // ? Synchronise asset status with assignment
+        if (
+            updates.assignedTo !== undefined &&
+            updates.status === undefined
+        ) {
+            updates.status = updates.assignedTo
+                ? "assigned"
+                : "available";
         }
 
         // ? Update Serial Number
@@ -143,8 +194,8 @@ export const updateAsset = async (req, res, next) => {
                 runValidators: true,
             }
         )
-        .populate("createdBy", "fullName email")
-        .populate("assignedTo", "fullName email");
+            .populate("createdBy", "fullName email")
+            .populate("assignedTo", "fullName email");
 
         if (!asset) {
             return res.status(404).json({
@@ -156,9 +207,8 @@ export const updateAsset = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "✅ Asset updated successfully",
-            data: asset
+            data: asset,
         });
-
     } catch (error) {
         next(error);
     }

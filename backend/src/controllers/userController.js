@@ -19,6 +19,26 @@ export const getUsers = async (req, res, next) => {
     }
 };
 
+export const getEmployees = async (req, res, next) => {
+    try {
+        const employees = await User.find({
+            role: "employee",
+            isActive: true,
+        })
+        .select("_id fullName email phoneNumber")
+        .sort({ fullName: 1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "✅ Employees fetched successfully",
+            count: employees.length,
+            data: employees,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 // * UPDATE USER
 export const updateUser = async (req, res, next) => {
     try {

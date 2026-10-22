@@ -1,8 +1,13 @@
 import express from "express";
-import { getUsers, updateUser, deleteUser } from "../controllers/userController.js";
+import { getUsers, getEmployees, updateUser, deleteUser } from "../controllers/userController.js";
 import { authenticate, authoriseRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+// @route   GET /api/users/employees
+// @desc    Get all employees
+// @access  Private
+router.get("/employees", authenticate, authoriseRoles("admin"), getEmployees);
 
 // @route   GET /api/users
 // @desc    Get all users
