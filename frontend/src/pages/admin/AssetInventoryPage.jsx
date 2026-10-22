@@ -264,7 +264,7 @@ function AssetInventoryPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[900px] text-left">
+                        <table className="w-full min-w-[1080px] text-left">
                             <thead className="bg-surface-container-low text-label-sm uppercase tracking-wider text-on-surface-variant">
                                 <tr>
                                     <th className="px-space-lg py-space-md font-label-md">
@@ -278,6 +278,9 @@ function AssetInventoryPage() {
                                     </th>
                                     <th className="px-space-lg py-space-md font-label-md">
                                         Status
+                                    </th>
+                                    <th className="px-space-lg py-space-md font-label-md">
+                                        Assigned to
                                     </th>
                                     <th className="px-space-lg py-space-md font-label-md">
                                         Created
@@ -311,6 +314,26 @@ function AssetInventoryPage() {
 
                                         <td className="px-space-lg py-space-md">
                                             <StatusBadge status={asset.status} />
+                                        </td>
+
+                                        <td className="px-space-lg py-space-md">
+                                            {asset.assignedTo ? (
+                                                <div>
+                                                    <p className="text-label-md font-label-md font-semibold text-on-surface">
+                                                        {asset.assignedTo.fullName || 'Assigned employee'}
+                                                    </p>
+
+                                                    {asset.assignedTo.email && (
+                                                        <p className="mt-0.5 text-body-sm text-on-surface-variant">
+                                                            {asset.assignedTo.email}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <span className="text-body-sm text-on-surface-variant">
+                                                    Unassigned
+                                                </span>
+                                            )}
                                         </td>
 
                                         <td className="px-space-lg py-space-md text-body-sm text-on-surface-variant">
