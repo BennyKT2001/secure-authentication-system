@@ -8,15 +8,10 @@ const emptyAsset = {
     category: '',
     serialNumber: '',
     status: 'available',
+    assignedTo: '',
 };
 
-function AssetDetailsModal({
-    asset,
-    isOpen,
-    onClose,
-    onSave,
-    isSaving,
-}) {
+function AssetDetailsModal({ asset, isOpen, onClose, onSave, isSaving, employees = [], }) {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(emptyAsset);
 
@@ -30,6 +25,10 @@ function AssetDetailsModal({
                     category: asset.category || '',
                     serialNumber: asset.serialNumber || '',
                     status: asset.status || 'available',
+                    assignedTo:
+                        typeof asset.assignedTo === 'object'
+                            ? asset.assignedTo?._id || ''
+                            : asset.assignedTo || '',
                 });
             }
             setIsEditing(false);
@@ -125,6 +124,22 @@ function AssetDetailsModal({
 
                             <div className="rounded-lg bg-surface-container-low p-space-md">
                                 <p className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                                    Assigned to
+                                </p>
+
+                                <p className="mt-space-xs text-label-md font-semibold text-on-surface">
+                                    {asset.assignedTo?.fullName || 'Unassigned'}
+                                </p>
+
+                                {asset.assignedTo?.email && (
+                                    <p className="mt-1 text-body-sm text-on-surface-variant">
+                                        {asset.assignedTo.email}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="rounded-lg bg-surface-container-low p-space-md">
+                                <p className="text-label-sm uppercase tracking-wider text-on-surface-variant">
                                     Date Created
                                 </p>
                                 <p className="mt-space-xs text-body-sm text-on-surface">
@@ -195,6 +210,38 @@ function AssetDetailsModal({
                                 <input id="edit-asset-serial-number" name="serialNumber" value={formData.serialNumber} onChange={handleChange} required className="h-11 w-full rounded-lg bg-surface-container-low px-space-md font-code-sm outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary"
                                 />
                             </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="edit-asset-assigned-to" className="mb-space-xs block text-label-md
+                                font-label-md font-medium" >
+                                Assign to employee
+                            </label>
+
+                            <select id="edit-asset-assigned-to" name="assignedTo" value={formData.assignedTo}
+                                onChange={(event) => {
+                                    const assignedTo = event.target.value;
+
+                                    setFormData((current) => ({
+                                        ...current,
+                                        assignedTo,
+                                        status: assignedTo ? 'assigned' : 'available',
+                                    }));
+                                }}
+                                className="h-11 w-full rounded-lg bg-surface-container-low px-space-md text-body-md outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary"
+                            >
+                                <option value="">Unassigned</option>
+
+                                {employees.map((employee) => (
+                                    <option key={employee._id} value={employee._id}>
+                                        {employee.fullName} — {employee.email}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <p className="mt-space-xs text-label-sm text-on-surface-variant">
+                                Select Unassigned to remove the current assignment.
+                            </p>
                         </div>
 
                         <div>

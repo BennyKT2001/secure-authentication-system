@@ -4,13 +4,14 @@ import StatusBadge from '../../components/dashboard/StatusBadge.jsx';
 import assetApi from '../../services/assetApi.js';
 import AssetDetailsModal from "../../components/dashboard/AssetDetailsModal.jsx";
 import DeleteAssetDialog from "../../components/dashboard/DeleteAssetDialog.jsx";
+import userApi from "../../services/userApi.js";
 
 const statusOptions = [
-  { value: 'all', label: 'All statuses' },
-  { value: 'available', label: 'Available' },
-  { value: 'assigned', label: 'Assigned' },
-  { value: 'maintenance', label: 'Maintenance' },
-  { value: 'retired', label: 'Retired' },
+    { value: 'all', label: 'All statuses' },
+    { value: 'available', label: 'Available' },
+    { value: 'assigned', label: 'Assigned' },
+    { value: 'maintenance', label: 'Maintenance' },
+    { value: 'retired', label: 'Retired' },
 ];
 
 function AssetInventoryPage() {
@@ -29,22 +30,37 @@ function AssetInventoryPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    const [employees, setEmployees] = useState([]);
+
+
     useEffect(() => {
         const timer = window.setTimeout(() => {
-        const loadAssets = async () => {
-            try {
-            const response = await assetApi.getAssets();
-            setAssets(response.data || []);
-            } catch (error) {
-            setErrorMessage(
-                error.message || 'Unable to load the asset inventory.',
-            );
-            } finally {
-            setIsLoading(false);
-            }
-        };
+            const loadAssets = async () => {
+                try {
+                    const response = await assetApi.getAssets();
+                    setAssets(response.data || []);
+                } catch (error) {
+                    setErrorMessage(
+                        error.message || 'Unable to load the asset inventory.',
+                    );
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
-        loadAssets();
+            const loadEmployees = async () => {
+                try {
+                    const response = await userApi.getEmployees();
+                    setEmployees(response.data || []);
+                } catch (error) {
+                    setErrorMessage(
+                        error.message || 'Unable to load employees.',
+                    );
+                }
+            };
+
+            loadAssets();
+            loadEmployees();
         }, 0);
 
         return () => window.clearTimeout(timer);
@@ -57,10 +73,10 @@ function AssetInventoryPage() {
         const matchesSearch =
             !normalizedSearch ||
             [
-            asset.name,
-            asset.serialNumber,
-            asset.category,
-            asset.description,
+                asset.name,
+                asset.serialNumber,
+                asset.category,
+                asset.description,
             ]
             .filter(Boolean)
             .some((value) =>
@@ -333,8 +349,8 @@ function AssetInventoryPage() {
                     </div>
                 )}
             </section>
-            <AssetDetailsModal asset={selectedAsset} isOpen={isDetailsOpen}
-                onClose={handleCloseDetails} onSave={handleSaveAsset} isSaving={isSaving} />
+            <AssetDetailsModal asset={selectedAsset} isOpen={isDetailsOpen} onClose={handleCloseDetails}
+                onSave={handleSaveAsset} isSaving={isSaving} employees={employees} />
 
             <DeleteAssetDialog asset={assetToDelete} isOpen={isDeleteOpen} onClose={handleCloseDelete}
                 onConfirm={handleDeleteAsset} isDeleting={isDeleting} />

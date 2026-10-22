@@ -4,6 +4,7 @@ import StatCard from '../../components/dashboard/StatCard.jsx';
 import StatusBadge from '../../components/dashboard/StatusBadge.jsx';
 import assetApi from '../../services/assetApi.js';
 import AddAssetModal from '../../components/dashboard/AddAssetModal.jsx';
+import userApi from '../../services/userApi.js';
 
 function AdminDashboard() {
     const [assets, setAssets] = useState([]);
@@ -13,6 +14,8 @@ function AdminDashboard() {
     const [successMessage, setSuccessMessage] = useState('');
     const [isAddAssetOpen, setIsAddAssetOpen] = useState(false);
     const [isCreatingAsset, setIsCreatingAsset] = useState(false);
+
+    const [employees, setEmployees] = useState([]);
 
 
     // Load assets
@@ -32,6 +35,17 @@ function AdminDashboard() {
         }
     }, []);
 
+    const loadEmployees = useCallback(async () => {
+        try {
+            const response = await userApi.getEmployees();
+                setEmployees(response.data || []);
+        } catch (error) {
+                setErrorMessage(
+                error.message || 'Unable to load employees.',
+            );
+        }
+    }, []);
+
         useEffect(() => {
             const timer = window.setTimeout(() => {
             loadAssets();
@@ -39,6 +53,14 @@ function AdminDashboard() {
 
             return () => window.clearTimeout(timer);
         }, [loadAssets]);
+
+        useEffect(() => {
+            const timer = window.setTimeout(() => {
+                loadEmployees();
+            }, 0);
+
+            return () => window.clearTimeout(timer);
+        }, [loadEmployees]);
 
     const stats = useMemo(() => {
         const countByStatus = (status) =>
@@ -302,8 +324,8 @@ function AdminDashboard() {
                 </aside>
             </section>
 
-            <AddAssetModal isOpen={isAddAssetOpen} onClose={() => setIsAddAssetOpen(false)}
-            onSubmit={handleCreateAsset} isSubmitting={isCreatingAsset} />
+            <AddAssetModal isOpen={isAddAssetOpen} onClose={() => setIsAddAssetOpen(false)} onSubmit={handleCreateAsset}
+                isSubmitting={isCreatingAsset} employees={employees} />
 
         </div>
     );

@@ -7,9 +7,10 @@ const initialForm = {
     category: '',
     serialNumber: '',
     status: 'available',
+    assignedTo: '',
 };
 
-function AddAssetModal({ isOpen, onClose, onSubmit, isSubmitting }) {
+function AddAssetModal({ isOpen, onClose, onSubmit, isSubmitting, employees = [], }) {
     const [formData, setFormData] = useState(initialForm);
 
     if (!isOpen) {
@@ -113,6 +114,39 @@ function AddAssetModal({ isOpen, onClose, onSubmit, isSubmitting }) {
                             className="h-11 w-full rounded-lg bg-surface-container-low px-space-md font-code-sm outline-none placeholder:text-on-surface-variant/70 focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary"
                         />
                     </div>
+                </div>
+
+                <div>
+                    <label htmlFor="asset-assigned-to" className="mb-space-xs block text-label-md font-label-md
+                        font-medium" >
+                        Assign to employee
+                    </label>
+
+                    <select id="asset-assigned-to" name="assignedTo" value={formData.assignedTo}
+                        onChange={(event) => {
+                            const assignedTo = event.target.value;
+
+                            setFormData((current) => ({
+                                ...current,
+                                assignedTo,
+                                status: assignedTo ? 'assigned' : 'available',
+                            }));
+                        }}
+                        className="h-11 w-full rounded-lg bg-surface-container-low px-space-md text-body-md outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-secondary"
+                    >
+                        <option value="">Unassigned</option>
+
+                        {employees.map((employee) => (
+                            <option key={employee._id} value={employee._id}>
+                                {employee.fullName} — {employee.email}
+                            </option>
+                        ))}
+                    </select>
+
+                    <p className="mt-space-xs text-label-sm text-on-surface-variant">
+                        Assigning an employee will automatically set the asset status to
+                        assigned.
+                    </p>
                 </div>
 
                 <div>
