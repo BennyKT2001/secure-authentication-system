@@ -1,4 +1,4 @@
-import { Boxes, LayoutDashboard, LogOut, Settings2, ShieldCheck, UserRound, UsersRound, } from 'lucide-react';
+import { Activity, Boxes, LayoutDashboard, LogOut, Settings2, ShieldCheck, UserRound, UsersRound, } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import BrandLogo from '../ui/BrandLogo.jsx';
 
@@ -6,21 +6,26 @@ const navigationGroups = [
     {
         label: 'Administration',
         items: [
-        {
-            label: 'Dashboard',
-            to: '/dashboard',
-            icon: LayoutDashboard,
-        },
-        {
-            label: 'Assets inventory',
-            to: '/assets',
-            icon: Boxes,
-        },
-        {
-            label: 'User management',
-            to: '/users',
-            icon: UsersRound,
-        },
+            {
+                label: 'Dashboard',
+                to: '/dashboard',
+                icon: LayoutDashboard,
+            },
+            {
+                label: 'Assets inventory',
+                to: '/assets',
+                icon: Boxes,
+            },
+            {
+                label: 'User management',
+                to: '/users',
+                icon: UsersRound,
+            },
+            {
+                label: 'Audit log',
+                to: '/audit-logs',
+                icon: Activity,
+            },
         ],
     },
     {

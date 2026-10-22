@@ -15,6 +15,7 @@ import ProfilePage from "./pages/shared/ProfilePage.jsx";
 import SettingsSecurityPage from "./pages/shared/SettingsSecurityPage.jsx";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage.jsx";
+import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
 
 function ComingSoonPage({ title }) {
   return (
@@ -60,10 +61,13 @@ function App() {
                 <Route path="/dashboard" element={<AdminDashboard />} />
                 <Route path="/assets" element={<AssetInventoryPage />} />
                 <Route path="/users" element={<UserManagementPage />} />
+                <Route path="/audit-logs" element={<AuditLogPage />} />
               </Route>
 
-              <Route element={<RoleRoute allowedRoles={['admin', 'employee']} />}>
+              <Route element={<RoleRoute allowedRoles={['employee']} />}>
+              {/* <Route element={<RoleRoute allowedRoles={['admin', 'employee']} />}> */}
                 <Route path="/my-assets" element={<MyAssignedAssetsPage />} />
+                {/* <Route path="/audit-logs" element={<AuditLogPage />} /> */}
               </Route>
 
               <Route path="/settings" element={<SettingsSecurityPage />} />
