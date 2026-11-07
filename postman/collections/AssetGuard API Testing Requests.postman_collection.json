@@ -1,0 +1,420 @@
+{
+  "info": {
+    "_postman_id": "4f297929-1f85-48d1-99d5-fc71b082298b",
+    "name": "AssetGuard API Testing Requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47049855"
+  },
+  "item": [
+    {
+      "name": "TC-001 – User Registration",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Postman Test Employee2\",\n  \"email\": \"postman.employee2.test@example.com\",\n  \"phoneNumber\": \"+27821234587\",\n  \"password\": \"TestPassword1234!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-001 – Registration OTP Verification",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"postman.employee.test@example.com\",\n  \"otp\": \"698287\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/verify-otp",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "verify-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-002 – User Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\",\n  \"password\": \"YourNewTestPassword123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-002 – Login OTP Verification",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\",\n  \"otp\": \"685234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/verify-login-otp",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "verify-login-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-003 – Expired or Previously Used OTP",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\",\n  \"otp\": \"442839\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/verify-login-otp",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "verify-login-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-004 – Password Recovery OTP Request",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/forgot-password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "forgot-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-004 – Password Recovery OTP Verification",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\",\n  \"otp\": \"152669\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}auth/forgot-password",
+          "host": [
+            "{{baseUrl}}auth"
+          ],
+          "path": [
+            "forgot-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-004 – Password Reset",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"otp.verify.test@example.com\",\n  \"otp\": \"852010\",\n  \"newPassword\": \"YourNewTestPassword123!\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/reset-password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "reset-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-005 – Asset Creation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Test Laptop\",\n  \"category\": \"Laptop\",\n  \"serialNumber\": \"POSTMAN-TEST-001\",\n  \"description\": \"Asset created for capstone implementation testing\",\n  \"status\": \"available\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}assets",
+          "host": [
+            "{{baseUrl}}assets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-006 – Asset Assignment",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignedTo\": \"6ada1b149af645c64151cc90\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/assets/6acff766ba72367dce48eaf4",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "assets",
+            "6acff766ba72367dce48eaf4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-007 – Asset Unassignment",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignedTo\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}assets/6acff766ba72367dce48eaf4",
+          "host": [
+            "{{baseUrl}}assets"
+          ],
+          "path": [
+            "6acff766ba72367dce48eaf4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-008 – Asset Deletion",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/assets/6aeddfc3e9c982e1aa07c8cd",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "assets",
+            "6aeddfc3e9c982e1aa07c8cd"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-009 – Employee Audit Log Access Restriction",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/audit-logs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "audit-logs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-010 – Employee User Management Access Restriction",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-011 – Employee Asset Creation Restriction",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Unauthorised Test Laptop\",\n  \"description\": \"Testing employee asset creation restriction\",\n  \"category\": \"Laptop\",\n  \"serialNumber\": \"UNAUTH-TEST-001\",\n  \"status\": \"available\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/assets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "assets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-012 – Employee Assigned Assets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/assets/my-assets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "assets",
+            "my-assets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-013 – Administrator Audit Log Access",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/audit-logs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "audit-logs"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}

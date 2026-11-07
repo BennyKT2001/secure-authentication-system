@@ -42,7 +42,7 @@ export const registerUser = async (req, res, next) => {
         //? Return the new user
         return res.status(201).json({
             success: true,
-            message: "✅ User registered successfully...",
+            message: "✅ User registered successfully. Please verify your account using the OTP sent to your email.",
             data: {
                 id: user._id,
                 fullName: user.fullName,
