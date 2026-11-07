@@ -545,11 +545,11 @@ The project demonstrates the integration of authentication and authorisation mec
 
 ## 15. Author
 
-**Developed by:** Benedict Kitwa
+**Developed by:** Benediction Kitwa Kalombola / Software Engineer
 
 **Project Title:** Secure Web-Based Asset Management System for Small and Medium-Sized Enterprises (SMEs)
 
-**Academic Programme:** Postgraduate Diploma
+**Academic Programme:** Postgraduate Diploma / Cape Peninsula University of Technology
 
 **GitHub Repository:** [secure-authentication-system](https://github.com/BennyKT2001/secure-authentication-system)
 
