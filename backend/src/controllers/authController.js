@@ -151,7 +151,7 @@ export const verifyRegistrationOtp = async (req, res, next) => {
         res.cookie("accessToken", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 1000 * 60 * 60, // 1 hour
         });
 
@@ -307,7 +307,7 @@ export const verifyLoginOtp = async (req, res, next) => {
         res.cookie("accessToken", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 1000 * 60 * 60, // 1 hour
         });
 
@@ -332,7 +332,7 @@ export const logoutUser = async (req, res, next) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     return res.status(200).json({
