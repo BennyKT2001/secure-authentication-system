@@ -1,91 +1,95 @@
-import nodemailer from 'nodemailer';
 
-const createTransporter = () => {
-    const {
-        EMAIL_HOST,
-        EMAIL_PORT,
-        EMAIL_USER,
-        EMAIL_PASSWORD
-    } = process.env;
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
-    if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASSWORD) {
-        throw new Error(
-        'Email Service Not Configured. Please set EMAIL_HOST, EMAIL_USER, and EMAIL_PASSWORD.'
-        );
-    }
-
-    return nodemailer.createTransport({
-        host: EMAIL_HOST,
-        port: Number(EMAIL_PORT || 587),
-        secure: Number(EMAIL_PORT || 587) === 465,
-        auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASSWORD
+const getPurposeDetails = (purpose) => {
+    const purposes = {
+        registration: {
+            label: "Registration",
+            description: "complete your account registration"
+        },
+        login: {
+            label: "Login",
+            description: "complete your login verification"
+        },
+        passwordReset: {
+            label: "Password Reset",
+            description: "verify your identity and reset your password"
         }
-    });
+    };
+
+    return purposes[purpose] || {
+        label: "Verification",
+        description: "complete your verification"
+    };
 };
 
 export const sendOtpEmail = async ({ recipient, otp, purpose }) => {
-    const transporter = createTransporter();
+    const {
+        BREVO_API_KEY,
+        EMAIL_FROM,
+        EMAIL_FROM_NAME
+    } = process.env;
 
-    const purposeLabel =
-        purpose === 'registration' ? 'registration' : 'login';
+    if (!BREVO_API_KEY || !EMAIL_FROM) {
+        throw new Error(
+            "Email Service Not Configured. Please set BREVO_API_KEY and EMAIL_FROM."
+        );
+    }
 
-    await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: recipient,
-        subject: `Your ${purposeLabel} verification code`,
-        text: `Your verification code is ${otp}. It expires in ${
-        process.env.OTP_EXPIRES_MINUTES || 5
-        } minutes.`,
-        html: `
-        <p>Your verification code is:</p>
-        <h2>${otp}</h2>
-        <p>This code expires in ${
-            process.env.OTP_EXPIRES_MINUTES || 5
-        } minutes.</p>
-        <p>If you did not request this code, you can ignore this email.</p>
+    const purposeDetails = getPurposeDetails(purpose);
+    const expiry = process.env.OTP_EXPIRES_IN || "5m";
+
+    const payload = {
+        sender: {
+            name: EMAIL_FROM_NAME || "AssetGuard",
+            email: EMAIL_FROM
+        },
+        to: [
+            {
+                email: recipient
+            }
+        ],
+        subject: `AssetGuard - Your ${purposeDetails.label} Verification Code`,
+        textContent: `Your AssetGuard verification code is ${otp}. Use this code to ${purposeDetails.description}. It expires in ${expiry}. If you did not request this code, please ignore this email.`,
+        htmlContent: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; color: #333;">
+                <h2 style="color: #2563eb;">AssetGuard Verification</h2>
+                <p>Your verification code is:</p>
+                <h1 style="letter-spacing: 6px; color: #2563eb;">${otp}</h1>
+                <p>Use this code to ${purposeDetails.description}.</p>
+                <p>This code expires in <strong>${expiry}</strong>.</p>
+                <p>If you did not request this code, please ignore this email.</p>
+                <hr />
+                <p style="font-size: 12px; color: #777;">
+                    AssetGuard - Secure Web-Based Asset Management
+                </p>
+            </div>
         `
+    };
+
+    const response = await fetch(BREVO_API_URL, {
+        method: "POST",
+        headers: {
+            "accept": "application/json",
+            "api-key": BREVO_API_KEY,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+        const errorDetails = await response.text();
+
+        console.error("Brevo email API error:", response.status, errorDetails);
+
+        throw new Error(
+            `Failed to send email through Brevo. HTTP status: ${response.status}`
+        );
+    }
+
+    const result = await response.json();
+
+    console.log(`OTP email successfully submitted to Brevo for ${recipient}.`);
+
+    return result;
 };
-
-
-
-// import nodemailer from 'nodemailer';
-
-// // ! Check if email configuration is available in environment variables
-// const hasEmailConfig =
-//     process.env.EMAIL_HOST &&
-//     process.env.EMAIL_PASSWORD &&
-//     process.env.EMAIL_USER &&
-//     process.env.EMAIL_FROM;
-
-// // ! Create a transporter object using nodemailer if email configuration is available
-// const transporter = hasEmailConfig ? nodemailer.createTransport({
-//     host: process.env.EMAIL_HOST,
-//     port: Number(process.env.EMAIL_PORT) || 587, // Default to port 587 if not set
-//     secure: Number(process.env.EMAIL_PORT) === 465, // Use secure connection for port 465
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASSWORD
-//     }
-// }) : null;
-
-// export const sendOTPEmail = async (recipient, otp, purpose) => {
-//     if (!transporter) {
-//         throw new Error("❌ Email Service Not Configured. Please set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, and EMAIL_PASSWORD in your environment variables.");
-//     }
-
-//     const purposeLabel = purpose === "registration" ? "Registration" : "Password Reset";
-
-//     await transporter.sendMail({
-//         from: process.env.EMAIL_FROM,
-//         to: recipient,
-//         subject: `Your ${purposeLabel} Verification Code`,
-//         text: `Your OTP for ${purposeLabel} is: ${otp}. This code will expire in ${process.env.OTP_EXPIRES_IN || 5} minutes. If you did not request this, please ignore this email.`,
-
-//         //! HTML email
-//         html: `p>Your verification code is:/p>h2> ${otp}/h2>p>This code will expire in ${process.env.OTP_EXPIRES_IN || 5} minutes.p>pIf you did not request this, please ignore this email./p>`
-//     });
-
-// }
